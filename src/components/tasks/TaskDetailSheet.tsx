@@ -51,6 +51,7 @@ interface TaskDetailSheetProps {
   open: boolean;
   onClose: () => void;
   projectId: string;
+  members?: { id: string; name: string; email: string; avatar?: string }[];
 }
 
 const editSchema = z.object({
@@ -58,7 +59,7 @@ const editSchema = z.object({
   description: z.string().max(2000).optional(),
 });
 
-export default function TaskDetailSheet({ task, open, onClose, projectId }: TaskDetailSheetProps) {
+export default function TaskDetailSheet({ task, open, onClose, projectId, members = [] }: TaskDetailSheetProps) {
   const [comment, setComment] = useState('');
   const [editing, setEditing] = useState(false);
   const [editTitle, setEditTitle] = useState('');
@@ -87,6 +88,11 @@ export default function TaskDetailSheet({ task, open, onClose, projectId }: Task
   const handlePriorityChange = async (priority: TaskPriority) => {
     if (!task) return;
     await updateTask.mutateAsync({ priority });
+  };
+
+  const handleAssigneeChange = async (assigneeId: string | undefined) => {
+    if (!task) return;
+    await updateTask.mutateAsync({ assigneeId: assigneeId || undefined });
   };
 
   const startEditing = () => {
@@ -255,19 +261,62 @@ export default function TaskDetailSheet({ task, open, onClose, projectId }: Task
             )}
 
             {/* Details */}
-            <div className="space-y-2">
+            <div className="space-y-3">
               <h4 className="text-sm font-medium">Details</h4>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                {task.assignee && (
+              <div className="grid grid-cols-2 gap-3">
+                {canManage && members.length > 0 && (
+                  <div className="space-y-1">
+                    <Label className="text-xs text-muted-foreground">Assignee</Label>
+                    <Select
+                      value={task.assigneeId ?? 'unassigned'}
+                      onValueChange={(v) => handleAssigneeChange(v === 'unassigned' ? undefined : v)}
+                    >
+                      <SelectTrigger className="h-8">
+                        <SelectValue>
+                          {task.assignee ? (
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-5 w-5">
+                                <AvatarImage src={task.assignee.avatar} />
+                                <AvatarFallback className="text-[10px]">
+                                  {task.assignee.name[0].toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span className="text-xs">{task.assignee.name}</span>
+                            </div>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">Unassigned</span>
+                          )}
+                        </SelectValue>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="unassigned">Unassigned</SelectItem>
+                        {members.map((m) => (
+                          <SelectItem key={m.id} value={m.id}>
+                            <div className="flex items-center gap-2">
+                              <Avatar className="h-5 w-5">
+                                <AvatarImage src={m.avatar} />
+                                <AvatarFallback className="text-[10px]">
+                                  {m.name[0].toUpperCase()}
+                                </AvatarFallback>
+                              </Avatar>
+                              <span>{m.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                {!canManage && task.assignee && (
                   <div className="flex items-center gap-2">
                     <User className="h-4 w-4 text-muted-foreground" />
-                    <span>{task.assignee.name}</span>
+                    <span className="text-sm">{task.assignee.name}</span>
                   </div>
                 )}
                 {task.dueDate && (
                   <div className="flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-muted-foreground" />
-                    <span>{formatDate(task.dueDate)}</span>
+                    <span className="text-sm">{formatDate(task.dueDate)}</span>
                   </div>
                 )}
               </div>

@@ -24,7 +24,8 @@ export default function ProjectsPage() {
   const updateProject = useUpdateProject(editProject?.id ?? '');
   const deleteProject = useDeleteProject();
 
-  const canCreate = user?.role === 'ADMIN' || user?.role === 'PROJECT_MANAGER';
+  const canManage = user?.role === 'ADMIN' || user?.role === 'PROJECT_MANAGER';
+  const canChangeStatus = canManage;
 
   return (
     <div className="space-y-6 p-6">
@@ -32,7 +33,7 @@ export default function ProjectsPage() {
         title="Projects"
         description="Manage your team's projects"
         action={
-          canCreate ? (
+          canManage ? (
             <Button onClick={() => setFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               New Project
@@ -54,7 +55,7 @@ export default function ProjectsPage() {
           title="No projects"
           description="Get started by creating your first project"
           action={
-            canCreate
+            canManage
               ? { label: 'Create Project', onClick: () => setFormOpen(true) }
               : undefined
           }
@@ -80,6 +81,7 @@ export default function ProjectsPage() {
           setFormOpen(false);
         }}
         isLoading={createProject.isPending}
+        showStatus={canChangeStatus}
       />
 
       <ProjectForm
@@ -100,6 +102,7 @@ export default function ProjectsPage() {
           setEditProject(null);
         }}
         isLoading={updateProject.isPending}
+        showStatus={canChangeStatus}
       />
 
       <DeleteConfirmModal

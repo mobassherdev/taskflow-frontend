@@ -32,9 +32,10 @@ interface ProjectFormProps {
   onSubmit: (data: CreateProjectPayload) => void;
   initialData?: Partial<CreateProjectPayload>;
   isLoading?: boolean;
+  showStatus?: boolean;
 }
 
-export default function ProjectForm({ open, onClose, onSubmit, initialData, isLoading }: ProjectFormProps) {
+export default function ProjectForm({ open, onClose, onSubmit, initialData, isLoading, showStatus = true }: ProjectFormProps) {
   const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -76,19 +77,21 @@ export default function ProjectForm({ open, onClose, onSubmit, initialData, isLo
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label>Status</Label>
-              <Select value={watch('status')} onValueChange={(v) => setValue('status', v as ProjectStatus)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="ACTIVE">Active</SelectItem>
-                  <SelectItem value="COMPLETED">Completed</SelectItem>
-                  <SelectItem value="ON_HOLD">On Hold</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            {showStatus && (
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Select value={watch('status')} onValueChange={(v) => setValue('status', v as ProjectStatus)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACTIVE">Active</SelectItem>
+                    <SelectItem value="COMPLETED">Completed</SelectItem>
+                    <SelectItem value="ON_HOLD">On Hold</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="deadline">Deadline</Label>
