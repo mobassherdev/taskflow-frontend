@@ -88,6 +88,12 @@ export function useAddComment(projectId: string, taskId: string) {
     mutationFn: (body: string) => tasksApi.addComment(projectId, taskId, body),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.tasks.detail(projectId, taskId) });
+      qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
+      qc.invalidateQueries({ queryKey: queryKeys.activities.recent });
+      toast.success('Comment added');
+    },
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      toast.error(err.response?.data?.message ?? 'Failed to add comment');
     },
   });
 }

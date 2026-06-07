@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
 import { useAddComment, useDeleteTask, useUpdateTask } from '@/hooks/useTasks';
+import { queryKeys } from '@/lib/query/keys';
 import { tasksApi } from '@/lib/api/tasks.api';
 import { useAppSelector } from '@/store/hooks';
 import type { Task, TaskPriority, TaskStatus } from '@/types/task.types';
@@ -38,6 +39,7 @@ import {
   User
 } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
@@ -54,6 +56,7 @@ interface TaskDetailSheetProps {
 
 
 export default function TaskDetailSheet({ task, open, onClose, projectId, members = [] }: TaskDetailSheetProps) {
+  const qc = useQueryClient();
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
 
@@ -129,8 +132,8 @@ export default function TaskDetailSheet({ task, open, onClose, projectId, member
       const formData = new FormData();
       formData.append('file', file);
       await tasksApi.uploadAttachment(projectId, task.id, formData);
+      qc.invalidateQueries({ queryKey: queryKeys.tasks.detail(projectId, task.id) });
       toast.success('File uploaded successfully');
-      // Refresh task data
     } catch {
       toast.error('Failed to upload file');
     } finally {

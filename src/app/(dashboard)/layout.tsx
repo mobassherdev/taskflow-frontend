@@ -33,7 +33,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 
 interface NavItem {
   label: string;
@@ -159,8 +159,13 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
 
-  const role: Role = user?.role ?? "TEAM_MEMBER";
+  useEffect(() => {
+    setHydrated(true);
+  }, []);
+
+  const role: Role = hydrated ? (user?.role ?? "TEAM_MEMBER") : "TEAM_MEMBER";
 
   const handleLogout = async () => {
     await dispatch(logout() as any);

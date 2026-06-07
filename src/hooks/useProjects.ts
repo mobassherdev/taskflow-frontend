@@ -30,6 +30,8 @@ export function useCreateProject() {
     mutationFn: (data: CreateProjectPayload) => projectsApi.create(data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['projects'] });
+      qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
+      qc.invalidateQueries({ queryKey: queryKeys.activities.recent });
       toast.success('Project created successfully');
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
@@ -45,6 +47,8 @@ export function useUpdateProject(id: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.projects.detail(id) });
       qc.invalidateQueries({ queryKey: ['projects'] });
+      qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
+      qc.invalidateQueries({ queryKey: queryKeys.activities.recent });
       toast.success('Project updated');
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
@@ -59,7 +63,12 @@ export function useDeleteProject() {
     mutationFn: (id: string) => projectsApi.delete(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['projects'] });
+      qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
+      qc.invalidateQueries({ queryKey: queryKeys.activities.recent });
       toast.success('Project deleted');
+    },
+    onError: (err: { response?: { data?: { message?: string } } }) => {
+      toast.error(err.response?.data?.message ?? 'Failed to delete project');
     },
   });
 }
@@ -71,6 +80,7 @@ export function useAddMember(projectId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) });
       qc.invalidateQueries({ queryKey: queryKeys.projects.members(projectId) });
+      qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
       toast.success('Member added');
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
@@ -86,6 +96,7 @@ export function useRemoveMember(projectId: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: queryKeys.projects.detail(projectId) });
       qc.invalidateQueries({ queryKey: queryKeys.projects.members(projectId) });
+      qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
       toast.success('Member removed');
     },
     onError: (err: { response?: { data?: { message?: string } } }) => {
