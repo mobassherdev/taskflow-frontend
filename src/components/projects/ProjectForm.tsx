@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -45,6 +46,17 @@ export default function ProjectForm({ open, onClose, onSubmit, initialData, isLo
       status: initialData?.status ?? 'ACTIVE',
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        name: initialData?.name ?? '',
+        description: initialData?.description ?? '',
+        deadline: initialData?.deadline?.split('T')[0] ?? '',
+        status: initialData?.status ?? 'ACTIVE',
+      });
+    }
+  }, [open, initialData, reset]);
 
   const handleFormSubmit = (values: FormValues) => {
     onSubmit({

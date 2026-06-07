@@ -1,5 +1,7 @@
 "use client";
 
+import ThemeToggle from "@/components/layout/ThemeToggle";
+import NotificationPanel from "@/components/notifications/NotificationPanel";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,15 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import ThemeToggle from "@/components/layout/ThemeToggle";
-import NotificationPanel from "@/components/notifications/NotificationPanel";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useUser } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
 import type { Role } from "@/types/auth.types";
 import {
   BarChart3,
-  Bell,
   CheckSquare,
   ChevronDown,
   FolderKanban,
@@ -29,7 +28,7 @@ import {
   Menu,
   Settings,
   Users,
-  type LucideIcon,
+  type LucideIcon
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -77,8 +76,6 @@ function SidebarContent({
   pathname,
   onNavClick,
   onLogout,
-  role,
-  user,
 }: {
   navItems: NavItem[];
   pathname: string;
@@ -87,26 +84,15 @@ function SidebarContent({
   role: Role;
   user: { name?: string; email?: string; avatar?: string } | null;
 }) {
-  const badge = ROLE_BADGE[role];
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      <div className="p-4 sm:p-5 border-b border-sidebar-border shrink-0">
+      <div className="h-16 border-b border-sidebar-border shrink-0">
         <Link href="/" className="block" onClick={onNavClick}>
-          <h2 className="text-lg sm:text-xl font-bold tracking-tight">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight p-4.5">
             <span className="text-primary">Task</span>{" "}
             <span className="text-secondary">Flow</span>
           </h2>
-          {badge && (
-            <span
-              className={cn(
-                "inline-block mt-1 text-[0.625rem] text-white px-2 py-0.5 rounded-full font-medium",
-                badge.color
-              )}
-            >
-              {badge.label}
-            </span>
-          )}
         </Link>
       </div>
 

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -56,6 +56,19 @@ export default function TaskForm({ open, onClose, onSubmit, initialData, isLoadi
       assigneeId: initialData?.assigneeId ?? '',
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        title: initialData?.title ?? '',
+        description: initialData?.description ?? '',
+        priority: initialData?.priority ?? 'MEDIUM',
+        status: initialData?.status ?? 'TODO',
+        dueDate: initialData?.dueDate?.split('T')[0] ?? '',
+        assigneeId: initialData?.assigneeId ?? '',
+      });
+    }
+  }, [open, initialData, reset]);
 
   const assigneeId = watch('assigneeId');
   const selectedMember = members.find((m) => m.id === assigneeId);
