@@ -1,9 +1,9 @@
 'use client';
-import { useQuery } from '@tanstack/react-query';
-import { usersApi } from '@/lib/api/users.api';
-import MemberCard from '@/components/team/MemberCard';
 import PageHeader from '@/components/shared/PageHeader';
+import MemberCard from '@/components/team/MemberCard';
 import { Skeleton } from '@/components/ui/skeleton';
+import { usersApi } from '@/lib/api/users.api';
+import { useQuery } from '@tanstack/react-query';
 
 export default function TeamPage() {
   const { data, isLoading } = useQuery({
@@ -12,7 +12,7 @@ export default function TeamPage() {
   });
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title="Team"
         description="View all team members"

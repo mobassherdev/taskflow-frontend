@@ -1,14 +1,14 @@
 'use client';
-import { useAppSelector, useAppDispatch } from '@/store/hooks';
-import { updateUser } from '@/store/slices/authSlice';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import PageHeader from '@/components/shared/PageHeader';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import PageHeader from '@/components/shared/PageHeader';
+import { authApi } from '@/lib/api/auth.api';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { updateUser } from '@/store/slices/authSlice';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { authApi } from '@/lib/api/auth.api';
 
 export default function SettingsPage() {
   const { user } = useAppSelector((s) => s.auth);
@@ -53,7 +53,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title="Settings"
         description="Manage your account settings"

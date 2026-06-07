@@ -1,15 +1,15 @@
 'use client';
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { formatDate } from '@/utils/formatters';
-import { useUser } from '@/store/hooks';
 import DeleteConfirmModal from '@/components/shared/DeleteConfirmModal';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useUser } from '@/store/hooks';
 import type { Project } from '@/types/project.types';
-import { Calendar, Users, CheckSquare, Pencil, Trash2 } from 'lucide-react';
+import { formatDate } from '@/utils/formatters';
+import { Calendar, CheckSquare, Pencil, Trash2, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useState } from 'react';
 
 const statusColors: Record<string, string> = {
   ACTIVE: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400',
@@ -80,7 +80,7 @@ export default function ProjectCard({ project, onEdit, onDelete }: ProjectCardPr
       <CardContent className="space-y-3">
         <Link href={`/projects/${project.id}`}>
           {project.description && (
-            <p className="text-sm text-muted-foreground line-clamp-2 cursor-pointer hover:text-foreground transition-colors">
+            <p className="text-sm text-muted-foreground line-clamp-2 cursor-pointer hover:text-foreground transition-colors mb-3">
               {project.description}
             </p>
           )}

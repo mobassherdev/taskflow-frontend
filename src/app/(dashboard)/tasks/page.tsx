@@ -1,31 +1,17 @@
 'use client';
-import { useState } from 'react';
-import { useMyTasks, useUpdateTask, useDeleteTask } from '@/hooks/useTasks';
-import TaskFiltersBar from '@/components/tasks/TaskFilters';
-import TaskDetailSheet from '@/components/tasks/TaskDetailSheet';
 import PageHeader from '@/components/shared/PageHeader';
-import TaskStatusBadge from '@/components/tasks/TaskStatusBadge';
+import TaskDetailSheet from '@/components/tasks/TaskDetailSheet';
+import TaskFiltersBar from '@/components/tasks/TaskFilters';
 import TaskPriorityBadge from '@/components/tasks/TaskPriorityBadge';
-import { Button } from '@/components/ui/button';
+import TaskStatusBadge from '@/components/tasks/TaskStatusBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { useMyTasks } from '@/hooks/useTasks';
+import { Task, TaskFilters } from '@/types/task.types';
 import { formatDate } from '@/utils/formatters';
-import type { Task, TaskFilters, TaskStatus } from '@/types/task.types';
 import { Calendar, FolderKanban, MessageSquare, Paperclip } from 'lucide-react';
+import { useState } from 'react';
 
-const STATUS_OPTIONS: { value: TaskStatus; label: string }[] = [
-  { value: 'TODO', label: 'To Do' },
-  { value: 'IN_PROGRESS', label: 'In Progress' },
-  { value: 'COMPLETED', label: 'Completed' },
-];
 
 export default function TasksPage() {
   const [filters, setFilters] = useState<TaskFilters>({});
@@ -35,7 +21,7 @@ export default function TasksPage() {
   const tasks: Task[] = data?.data ?? [];
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title="My Tasks"
         description="View and manage all your assigned tasks"

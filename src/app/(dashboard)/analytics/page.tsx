@@ -1,14 +1,14 @@
 'use client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import PageHeader from '@/components/shared/PageHeader';
 import TasksByPriorityChart from '@/components/charts/TasksByPriorityChart';
 import TaskStatusDonutChart from '@/components/charts/TaskStatusDonutChart';
 import TeamProductivityChart from '@/components/charts/TeamProductivityChart';
 import TeamWorkloadTable from '@/components/dashboard/TeamWorkloadTable';
+import PageHeader from '@/components/shared/PageHeader';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AnalyticsPage() {
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title="Analytics"
         description="Track your team's performance and project progress"

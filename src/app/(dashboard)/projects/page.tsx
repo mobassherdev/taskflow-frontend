@@ -1,17 +1,17 @@
 'use client';
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import ProjectCard from '@/components/projects/ProjectCard';
-import ProjectForm from '@/components/projects/ProjectForm';
 import ProjectFiltersBar from '@/components/projects/ProjectFilters';
-import PageHeader from '@/components/shared/PageHeader';
-import EmptyState from '@/components/shared/EmptyState';
+import ProjectForm from '@/components/projects/ProjectForm';
 import DeleteConfirmModal from '@/components/shared/DeleteConfirmModal';
-import { useProjects, useCreateProject, useUpdateProject, useDeleteProject } from '@/hooks/useProjects';
-import { useAppSelector } from '@/store/hooks';
+import EmptyState from '@/components/shared/EmptyState';
+import PageHeader from '@/components/shared/PageHeader';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus } from 'lucide-react';
+import { useCreateProject, useDeleteProject, useProjects, useUpdateProject } from '@/hooks/useProjects';
+import { useAppSelector } from '@/store/hooks';
 import type { Project, ProjectFilters } from '@/types/project.types';
+import { Plus } from 'lucide-react';
+import { useState } from 'react';
 
 export default function ProjectsPage() {
   const [filters, setFilters] = useState<ProjectFilters>({});
@@ -28,7 +28,7 @@ export default function ProjectsPage() {
   const canChangeStatus = canManage;
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title="Projects"
         description="Manage your team's projects"
@@ -90,11 +90,11 @@ export default function ProjectsPage() {
         initialData={
           editProject
             ? {
-                name: editProject.name,
-                description: editProject.description,
-                deadline: editProject.deadline,
-                status: editProject.status,
-              }
+              name: editProject.name,
+              description: editProject.description,
+              deadline: editProject.deadline,
+              status: editProject.status,
+            }
             : undefined
         }
         onSubmit={async (data) => {

@@ -1,26 +1,27 @@
 'use client';
-import { useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
+import AddMemberModal from '@/components/projects/AddMemberModal';
 import ProjectForm from '@/components/projects/ProjectForm';
 import ProjectStatusBadge from '@/components/projects/ProjectStatusBadge';
-import TaskCard from '@/components/tasks/TaskCard';
-import TaskForm from '@/components/tasks/TaskForm';
-import TaskDetailSheet from '@/components/tasks/TaskDetailSheet';
-import PageHeader from '@/components/shared/PageHeader';
-import EmptyState from '@/components/shared/EmptyState';
 import DeleteConfirmModal from '@/components/shared/DeleteConfirmModal';
-import { useProject, useUpdateProject, useDeleteProject } from '@/hooks/useProjects';
-import { useTasks, useCreateTask } from '@/hooks/useTasks';
+import EmptyState from '@/components/shared/EmptyState';
+import PageHeader from '@/components/shared/PageHeader';
+import TaskCard from '@/components/tasks/TaskCard';
+import TaskDetailSheet from '@/components/tasks/TaskDetailSheet';
+import TaskForm from '@/components/tasks/TaskForm';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useDeleteProject, useProject, useRemoveMember, useUpdateProject } from '@/hooks/useProjects';
+import { useCreateTask, useTasks } from '@/hooks/useTasks';
 import { useUser } from '@/store/hooks';
-import { formatDate, deadlineLabel } from '@/utils/formatters';
-import { Calendar, Users, CheckSquare, Plus, ArrowLeft, Pencil, Trash2, Loader2 } from 'lucide-react';
 import type { Task } from '@/types/task.types';
+import { deadlineLabel, formatDate } from '@/utils/formatters';
+import { ArrowLeft, Calendar, CheckSquare, Loader2, Pencil, Plus, Trash2, UserPlus, Users } from 'lucide-react';
+import { useParams, useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function ProjectDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -32,10 +33,13 @@ export default function ProjectDetailPage() {
   const updateProject = useUpdateProject(id);
   const deleteProject = useDeleteProject();
   const createTask = useCreateTask(id);
+  const removeMember = useRemoveMember(id);
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [taskFormOpen, setTaskFormOpen] = useState(false);
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [memberToDelete, setMemberToDelete] = useState<{ userId: string; name: string } | null>(null);
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   const canManage =
@@ -67,7 +71,7 @@ export default function ProjectDetailPage() {
   const deadline = deadlineLabel(project.deadline);
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title={project.name}
         description={project.description ?? 'No description'}
@@ -130,7 +134,7 @@ export default function ProjectDetailPage() {
                 />
               ) : (
                 <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                  {tasks.map((task) => (
+                  {tasks.map((task: Task) => (
                     <TaskCard
                       key={task.id}
                       task={task}
@@ -142,7 +146,15 @@ export default function ProjectDetailPage() {
             </TabsContent>
 
             <TabsContent value="members" className="space-y-4">
-              <h3 className="text-lg font-semibold">Members</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-semibold">Members</h3>
+                {canManage && (
+                  <Button size="sm" onClick={() => setAddMemberOpen(true)}>
+                    <UserPlus className="h-4 w-4 mr-1" />
+                    Add Member
+                  </Button>
+                )}
+              </div>
               {project.members && project.members.length > 0 ? (
                 <div className="space-y-3">
                   {project.members.map((member) => (
@@ -160,6 +172,19 @@ export default function ProjectDetailPage() {
                       <Badge variant="secondary" className="text-xs">
                         {member.user.role.replace('_', ' ')}
                       </Badge>
+                      {canManage && member.userId !== currentUser?.id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 shrink-0"
+                          onClick={() =>
+                            setMemberToDelete({ userId: member.userId, name: member.user.name })
+                          }
+                          aria-label={`Remove ${member.user.name}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -277,6 +302,29 @@ export default function ProjectDetailPage() {
         title="Delete Project"
         description="Are you sure you want to delete this project? This will also delete all tasks."
         isLoading={deleteProject.isPending}
+      />
+
+      <AddMemberModal
+        open={addMemberOpen}
+        onClose={() => setAddMemberOpen(false)}
+        projectId={id}
+        existingMemberIds={[
+          ...(project.members?.map((m) => m.userId) ?? []),
+          project.ownerId,
+        ]}
+      />
+
+      <DeleteConfirmModal
+        open={!!memberToDelete}
+        onClose={() => setMemberToDelete(null)}
+        onConfirm={async () => {
+          if (!memberToDelete) return;
+          await removeMember.mutateAsync(memberToDelete.userId);
+          setMemberToDelete(null);
+        }}
+        title="Remove Member"
+        description={`Are you sure you want to remove ${memberToDelete?.name ?? 'this member'} from the project?`}
+        isLoading={removeMember.isPending}
       />
 
       <TaskDetailSheet

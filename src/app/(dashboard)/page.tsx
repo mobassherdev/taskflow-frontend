@@ -1,18 +1,20 @@
 'use client';
-import { Suspense } from 'react';
-import {
-  FolderKanban, CheckSquare, Clock, AlertTriangle,
-} from 'lucide-react';
-import KpiCard from '@/components/dashboard/KpiCard';
-import RecentActivity from '@/components/dashboard/RecentActivity';
-import UpcomingDeadlines from '@/components/dashboard/UpcomingDeadlines';
-import TeamWorkloadTable from '@/components/dashboard/TeamWorkloadTable';
 import TasksByPriorityChart from '@/components/charts/TasksByPriorityChart';
 import TaskStatusDonutChart from '@/components/charts/TaskStatusDonutChart';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import KpiCard from '@/components/dashboard/KpiCard';
+import RecentActivity from '@/components/dashboard/RecentActivity';
+import TeamWorkloadTable from '@/components/dashboard/TeamWorkloadTable';
+import UpcomingDeadlines from '@/components/dashboard/UpcomingDeadlines';
 import PageHeader from '@/components/shared/PageHeader';
-import { useDashboard } from '@/hooks/useAnalytics';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useDashboard } from '@/hooks/useAnalytics';
+import {
+  AlertTriangle,
+  CheckSquare, Clock,
+  FolderKanban,
+} from 'lucide-react';
+import { Suspense } from 'react';
 
 function DashboardKpis() {
   const { data, isLoading } = useDashboard();
@@ -42,7 +44,7 @@ function DashboardKpis() {
 
 export default function DashboardPage() {
   return (
-    <div className="space-y-6 p-6">
+    <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
       <PageHeader
         title="Dashboard"
         description="Welcome back — here's what's happening across your projects"
