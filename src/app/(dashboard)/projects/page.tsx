@@ -5,6 +5,7 @@ import ProjectForm from '@/components/projects/ProjectForm';
 import DeleteConfirmModal from '@/components/shared/DeleteConfirmModal';
 import EmptyState from '@/components/shared/EmptyState';
 import PageHeader from '@/components/shared/PageHeader';
+import Pagination from '@/components/shared/Pagination';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useCreateProject, useDeleteProject, useProjects, useUpdateProject } from '@/hooks/useProjects';
@@ -15,11 +16,13 @@ import { useState } from 'react';
 
 export default function ProjectsPage() {
   const [filters, setFilters] = useState<ProjectFilters>({});
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
   const [formOpen, setFormOpen] = useState(false);
   const [editProject, setEditProject] = useState<Project | null>(null);
   const [deleteProjectId, setDeleteProjectId] = useState<string | null>(null);
   const { user } = useAppSelector((s) => s.auth);
-  const { data, isLoading } = useProjects(filters);
+  const { data, isLoading } = useProjects({ ...filters, page, limit });
   const createProject = useCreateProject();
   const updateProject = useUpdateProject(editProject?.id ?? '');
   const deleteProject = useDeleteProject();
@@ -42,7 +45,7 @@ export default function ProjectsPage() {
         }
       />
 
-      <ProjectFiltersBar filters={filters} onChange={setFilters} />
+      <ProjectFiltersBar filters={filters} onChange={(f) => { setFilters(f); setPage(1); }} />
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -61,16 +64,25 @@ export default function ProjectsPage() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {data?.data?.map((project: any) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              onEdit={(p) => setEditProject(p)}
-              onDelete={(id) => setDeleteProjectId(id)}
+        <>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {data?.data?.map((project: any) => (
+              <ProjectCard
+                key={project.id}
+                project={project}
+                onEdit={(p) => setEditProject(p)}
+                onDelete={(id) => setDeleteProjectId(id)}
+              />
+            ))}
+          </div>
+          {data?.pagination && data.pagination.totalPages > 1 && (
+            <Pagination
+              pagination={data.pagination}
+              onPageChange={setPage}
+              onPageSizeChange={(v) => { setLimit(v); setPage(1); }}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       <ProjectForm

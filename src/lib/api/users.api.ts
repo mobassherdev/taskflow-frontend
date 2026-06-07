@@ -3,7 +3,7 @@ import type { ApiResponse } from '@/types/api.types';
 import type { User } from '@/types/auth.types';
 
 export const usersApi = {
-  getAll: (params?: { search?: string; role?: string }) =>
+  getAll: (params?: { search?: string; role?: string; page?: number; limit?: number }) =>
     apiClient.get<ApiResponse<{ users: User[]; pagination: any }>>('/users', { params }),
 
   getById: (id: string) =>

@@ -1,5 +1,6 @@
 'use client';
 import PageHeader from '@/components/shared/PageHeader';
+import Pagination from '@/components/shared/Pagination';
 import TaskDetailSheet from '@/components/tasks/TaskDetailSheet';
 import TaskFiltersBar from '@/components/tasks/TaskFilters';
 import TaskPriorityBadge from '@/components/tasks/TaskPriorityBadge';
@@ -15,8 +16,10 @@ import { useState } from 'react';
 
 export default function TasksPage() {
   const [filters, setFilters] = useState<TaskFilters>({});
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
   const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
-  const { data, isLoading } = useMyTasks(filters);
+  const { data, isLoading } = useMyTasks({ ...filters, page, limit });
 
   const tasks: Task[] = data?.data ?? [];
   const selectedTask = tasks.find((t) => t.id === selectedTaskId) ?? null;
@@ -28,7 +31,7 @@ export default function TasksPage() {
         description="View and manage all your assigned tasks"
       />
 
-      <TaskFiltersBar filters={filters} onChange={setFilters} />
+      <TaskFiltersBar filters={filters} onChange={(f) => { setFilters(f); setPage(1); }} />
 
       {isLoading ? (
         <div className="space-y-3">
@@ -41,15 +44,24 @@ export default function TasksPage() {
           No tasks found
         </div>
       ) : (
-        <div className="space-y-3">
-          {tasks.map((task) => (
-            <TaskRow
-              key={task.id}
-              task={task}
-              onClick={() => setSelectedTaskId(task.id)}
+        <>
+          <div className="space-y-3">
+            {tasks.map((task) => (
+              <TaskRow
+                key={task.id}
+                task={task}
+                onClick={() => setSelectedTaskId(task.id)}
+              />
+            ))}
+          </div>
+          {data?.pagination && data.pagination.totalPages > 1 && (
+            <Pagination
+              pagination={data.pagination}
+              onPageChange={setPage}
+              onPageSizeChange={(v) => { setLimit(v); setPage(1); }}
             />
-          ))}
-        </div>
+          )}
+        </>
       )}
 
       {selectedTask && (
