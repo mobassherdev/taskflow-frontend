@@ -42,7 +42,7 @@ export function useCreateTask(projectId: string) {
     mutationFn: (data: CreateTaskPayload) => tasksApi.create(projectId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tasks', projectId] });
-      qc.invalidateQueries({ queryKey: queryKeys.tasks.myTasks() });
+      qc.invalidateQueries({ queryKey: ['tasks', 'my'] });
       qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
       toast.success('Task created');
     },
@@ -59,7 +59,8 @@ export function useUpdateTask(projectId: string, taskId: string) {
       tasksApi.update(projectId, taskId, data),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tasks', projectId] });
-      qc.invalidateQueries({ queryKey: queryKeys.tasks.myTasks() });
+      qc.invalidateQueries({ queryKey: queryKeys.tasks.detail(projectId, taskId) });
+      qc.invalidateQueries({ queryKey: ['tasks', 'my'] });
       qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
       toast.success('Task updated');
     },
@@ -75,7 +76,7 @@ export function useDeleteTask(projectId: string) {
     mutationFn: (taskId: string) => tasksApi.delete(projectId, taskId),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['tasks', projectId] });
-      qc.invalidateQueries({ queryKey: queryKeys.tasks.myTasks() });
+      qc.invalidateQueries({ queryKey: ['tasks', 'my'] });
       qc.invalidateQueries({ queryKey: queryKeys.analytics.dashboard });
       toast.success('Task deleted');
     },

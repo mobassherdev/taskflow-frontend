@@ -15,10 +15,11 @@ import { useState } from 'react';
 
 export default function TasksPage() {
   const [filters, setFilters] = useState<TaskFilters>({});
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
   const { data, isLoading } = useMyTasks(filters);
 
   const tasks: Task[] = data?.data ?? [];
+  const selectedTask = tasks.find((t) => t.id === selectedTaskId) ?? null;
 
   return (
     <div className="lg:space-y-6 md:space-y-5 space-y-4 lg:p-2 md:p-1 p-0">
@@ -45,7 +46,7 @@ export default function TasksPage() {
             <TaskRow
               key={task.id}
               task={task}
-              onClick={() => setSelectedTask(task)}
+              onClick={() => setSelectedTaskId(task.id)}
             />
           ))}
         </div>
@@ -55,7 +56,7 @@ export default function TasksPage() {
         <TaskDetailSheet
           task={selectedTask}
           open={!!selectedTask}
-          onClose={() => setSelectedTask(null)}
+          onClose={() => setSelectedTaskId(null)}
           projectId={selectedTask.projectId}
         />
       )}

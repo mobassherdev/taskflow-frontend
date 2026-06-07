@@ -20,7 +20,7 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import { Textarea } from '@/components/ui/textarea';
-import { useAddComment, useDeleteTask, useUpdateTask } from '@/hooks/useTasks';
+import { useAddComment, useDeleteTask, useTask, useUpdateTask } from '@/hooks/useTasks';
 import { queryKeys } from '@/lib/query/keys';
 import { tasksApi } from '@/lib/api/tasks.api';
 import { useAppSelector } from '@/store/hooks';
@@ -55,7 +55,7 @@ interface TaskDetailSheetProps {
 }
 
 
-export default function TaskDetailSheet({ task, open, onClose, projectId, members = [] }: TaskDetailSheetProps) {
+export default function TaskDetailSheet({ task: taskProp, open, onClose, projectId, members = [] }: TaskDetailSheetProps) {
   const qc = useQueryClient();
   const [assigneeSearch, setAssigneeSearch] = useState('');
   const [assigneePickerOpen, setAssigneePickerOpen] = useState(false);
@@ -76,8 +76,12 @@ export default function TaskDetailSheet({ task, open, onClose, projectId, member
   const { user } = useAppSelector((s) => s.auth);
   const canManage = user?.role === 'ADMIN' || user?.role === 'PROJECT_MANAGER';
 
-  const addComment = useAddComment(projectId, task?.id ?? '');
-  const updateTask = useUpdateTask(projectId, task?.id ?? '');
+  const taskId = taskProp?.id ?? '';
+  const { data: freshTask } = useTask(projectId, taskId);
+  const task = freshTask ?? taskProp;
+
+  const addComment = useAddComment(projectId, taskId);
+  const updateTask = useUpdateTask(projectId, taskId);
   const deleteTask = useDeleteTask(projectId);
 
   const handleAddComment = async () => {

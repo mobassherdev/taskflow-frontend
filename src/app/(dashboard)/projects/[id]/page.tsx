@@ -40,7 +40,7 @@ export default function ProjectDetailPage() {
   const [taskFormOpen, setTaskFormOpen] = useState(false);
   const [addMemberOpen, setAddMemberOpen] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState<{ userId: string; name: string } | null>(null);
-  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
 
   const canManage =
     currentUser?.role === 'ADMIN' ||
@@ -68,6 +68,7 @@ export default function ProjectDetailPage() {
   }
 
   const tasks = tasksData?.data ?? [];
+  const selectedTask = tasks.find((t: Task) => t.id === selectedTaskId) ?? null;
   const deadline = deadlineLabel(project.deadline);
 
   return (
@@ -138,7 +139,7 @@ export default function ProjectDetailPage() {
                     <TaskCard
                       key={task.id}
                       task={task}
-                      onClick={() => setSelectedTask(task)}
+                      onClick={() => setSelectedTaskId(task.id)}
                     />
                   ))}
                 </div>
@@ -330,7 +331,7 @@ export default function ProjectDetailPage() {
       <TaskDetailSheet
         task={selectedTask}
         open={!!selectedTask}
-        onClose={() => setSelectedTask(null)}
+        onClose={() => setSelectedTaskId(null)}
         projectId={id}
         members={project?.members?.map(m => m.user) ?? []}
       />
