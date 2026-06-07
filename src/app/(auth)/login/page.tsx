@@ -1,16 +1,15 @@
 'use client';
-import { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { loginThunk } from '@/store/slices/authSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { loginThunk } from '@/store/slices/authSlice';
+import { zodResolver } from '@hookform/resolvers/zod';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
+import { z } from 'zod';
 
 const schema = z.object({
   email: z.string().email('Enter a valid email'),
@@ -21,8 +20,8 @@ type FormValues = z.infer<typeof schema>;
 
 const DEMO_CREDENTIALS = {
   admin: { email: 'admin@taskflow.dev', password: 'demo1234' },
-  manager: { email: 'manager@taskflow.dev', password: 'demo1234' },
-  member: { email: 'member@taskflow.dev', password: 'demo1234' },
+  manager: { email: 'james@taskflow.dev', password: 'demo1234' },
+  member: { email: 'david@taskflow.dev', password: 'demo1234' },
 };
 
 export default function LoginPage() {
