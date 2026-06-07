@@ -4,7 +4,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ROLE_LABELS } from '@/utils/constants';
 import type { User } from '@/types/auth.types';
-import { X } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 
 interface MemberCardProps {
   user: User;
@@ -33,13 +33,13 @@ export default function MemberCard({ user, showRemove, onRemove }: MemberCardPro
               <Button
                 variant="ghost"
                 size="icon"
-                className="h-7 w-7 text-destructive hover:text-destructive"
+                className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   onRemove?.();
                 }}
               >
-                <X className="h-3 w-3" />
+                <Trash2 className="h-3.5 w-3.5" />
               </Button>
             )}
           </div>
