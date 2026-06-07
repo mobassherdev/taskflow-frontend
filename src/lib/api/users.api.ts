@@ -1,6 +1,14 @@
 import apiClient from './client';
 import type { ApiResponse } from '@/types/api.types';
-import type { User, SignupPayload } from '@/types/auth.types';
+import type { User, SignupPayload, Role } from '@/types/auth.types';
+
+export interface UpdateUserPayload {
+  name?: string;
+  email?: string;
+  role?: Role;
+  avatar?: string;
+  password?: string;
+}
 
 export const usersApi = {
   getAll: (params?: { search?: string; role?: string; page?: number; limit?: number }) =>
@@ -12,7 +20,7 @@ export const usersApi = {
   create: (data: SignupPayload) =>
     apiClient.post<ApiResponse<{ user: User }>>('/auth/signup', data),
 
-  update: (id: string, data: Partial<{ name: string; avatar: string }>) =>
+  update: (id: string, data: UpdateUserPayload) =>
     apiClient.patch<ApiResponse<User>>(`/users/${id}`, data),
 
   delete: (id: string) =>

@@ -2,17 +2,24 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { ROLE_LABELS } from '@/utils/constants';
 import type { User } from '@/types/auth.types';
-import { Trash2 } from 'lucide-react';
+import { MoreVertical, Pencil, Trash2 } from 'lucide-react';
 
 interface MemberCardProps {
   user: User;
-  showRemove?: boolean;
-  onRemove?: () => void;
+  showActions?: boolean;
+  onEdit?: () => void;
+  onDelete?: () => void;
 }
 
-export default function MemberCard({ user, showRemove, onRemove }: MemberCardProps) {
+export default function MemberCard({ user, showActions, onEdit, onDelete }: MemberCardProps) {
   return (
     <Card>
       <CardContent className="p-4">
@@ -29,18 +36,31 @@ export default function MemberCard({ user, showRemove, onRemove }: MemberCardPro
             <Badge variant="outline" className="text-xs">
               {ROLE_LABELS[user.role] ?? user.role}
             </Badge>
-            {showRemove && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onRemove?.();
-                }}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
+            {showActions && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8"
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={onEdit}>
+                    <Pencil className="h-4 w-4 mr-2" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={onDelete}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4 mr-2" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
           </div>
         </div>

@@ -4,9 +4,10 @@ import Pagination from '@/components/shared/Pagination';
 import DeleteConfirmModal from '@/components/shared/DeleteConfirmModal';
 import MemberCard from '@/components/team/MemberCard';
 import UserForm from '@/components/team/UserForm';
+import EditUserForm from '@/components/team/EditUserForm';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { usersApi } from '@/lib/api/users.api';
+import { usersApi, type UpdateUserPayload } from '@/lib/api/users.api';
 import { useAppSelector } from '@/store/hooks';
 import type { PaginationMeta } from '@/types/api.types';
 import type { User, Role } from '@/types/auth.types';
@@ -23,6 +24,7 @@ export default function TeamPage() {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(12);
   const [createOpen, setCreateOpen] = useState(false);
+  const [editUser, setEditUser] = useState<User | null>(null);
   const [deleteUser, setDeleteUser] = useState<User | null>(null);
 
   const { data, isLoading } = useQuery({
@@ -43,6 +45,19 @@ export default function TeamPage() {
     },
     onError: (err: any) => {
       toast.error(err.response?.data?.message ?? 'Failed to create user');
+    },
+  });
+
+  const updateUser = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: UpdateUserPayload }) =>
+      usersApi.update(id, data),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['users'] });
+      setEditUser(null);
+      toast.success('User updated successfully');
+    },
+    onError: (err: any) => {
+      toast.error(err.response?.data?.message ?? 'Failed to update user');
     },
   });
 
@@ -90,8 +105,9 @@ export default function TeamPage() {
               <MemberCard
                 key={u.id}
                 user={u}
-                showRemove={isAdmin && u.id !== currentUser?.id}
-                onRemove={() => setDeleteUser(u)}
+                showActions={isAdmin && u.id !== currentUser?.id}
+                onEdit={() => setEditUser(u)}
+                onDelete={() => setDeleteUser(u)}
               />
             ))}
           </div>
@@ -110,6 +126,16 @@ export default function TeamPage() {
         onClose={() => setCreateOpen(false)}
         onSubmit={(data) => createUser.mutateAsync(data)}
         isLoading={createUser.isPending}
+      />
+
+      <EditUserForm
+        open={!!editUser}
+        onClose={() => setEditUser(null)}
+        onSubmit={(data) => {
+          if (editUser) updateUser.mutateAsync({ id: editUser.id, data });
+        }}
+        user={editUser}
+        isLoading={updateUser.isPending}
       />
 
       <DeleteConfirmModal
