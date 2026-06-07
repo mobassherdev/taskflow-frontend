@@ -1,19 +1,22 @@
 'use client';
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard, FolderKanban, CheckSquare,
-  Users, BarChart3, Settings, LogOut, X,
-} from 'lucide-react';
-import { cn } from '@/utils/cn';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { setSidebarOpen } from '@/store/slices/uiSlice';
-import { logout } from '@/store/slices/authSlice';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/slices/authSlice';
+import { cn } from '@/utils/cn';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  BarChart3,
+  CheckSquare,
+  FolderKanban,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -27,10 +30,12 @@ const NAV_ITEMS = [
 export default function MobileNav({ open, onClose }: { open: boolean; onClose: () => void }) {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const qc = useQueryClient();
   const router = useRouter();
   const { user } = useAppSelector(s => s.auth);
 
   const handleLogout = () => {
+    qc.clear();
     dispatch(logout());
     router.push('/login');
   };

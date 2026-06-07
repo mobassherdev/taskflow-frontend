@@ -1,6 +1,7 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { store } from '@/store';
 import { logout, setTokens } from '@/store/slices/authSlice';
+import { queryClient } from '@/lib/query/queryClient';
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:5000/api';
 
@@ -55,6 +56,7 @@ apiClient.interceptors.response.use(
       return apiClient(original);
     } catch (err) {
       processQueue(err, null);
+      queryClient.clear();
       store.dispatch(logout());
       window.location.href = '/login';
       return Promise.reject(err);

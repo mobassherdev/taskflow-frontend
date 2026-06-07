@@ -1,17 +1,23 @@
 'use client';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard, FolderKanban, CheckSquare,
-  Users, BarChart3, Settings, LogOut, ChevronLeft,
-} from 'lucide-react';
-import { cn } from '@/utils/cn';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { toggleSidebar } from '@/store/slices/uiSlice';
-import { logout } from '@/store/slices/authSlice';
-import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { logout } from '@/store/slices/authSlice';
+import { toggleSidebar } from '@/store/slices/uiSlice';
+import { cn } from '@/utils/cn';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  BarChart3,
+  CheckSquare,
+  ChevronLeft,
+  FolderKanban,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  Users,
+} from 'lucide-react';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 
 const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -25,11 +31,13 @@ const NAV_ITEMS = [
 export default function Sidebar() {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
+  const qc = useQueryClient();
   const router = useRouter();
   const { sidebarOpen } = useAppSelector(s => s.ui);
   const { user } = useAppSelector(s => s.auth);
 
   const handleLogout = () => {
+    qc.clear();
     dispatch(logout());
     router.push('/login');
   };

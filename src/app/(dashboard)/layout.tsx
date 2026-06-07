@@ -16,6 +16,7 @@ import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
 import { cn } from "@/lib/utils";
 import { useAppDispatch, useUser } from "@/store/hooks";
 import { logout } from "@/store/slices/authSlice";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Role } from "@/types/auth.types";
 import {
   BarChart3,
@@ -144,6 +145,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const qc = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [hydrated, setHydrated] = useState(false);
 
@@ -154,6 +156,7 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
   const role: Role = hydrated ? (user?.role ?? "TEAM_MEMBER") : "TEAM_MEMBER";
 
   const handleLogout = async () => {
+    qc.clear();
     await dispatch(logout() as any);
     router.push("/login");
   };
